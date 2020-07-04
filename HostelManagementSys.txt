@@ -1,0 +1,206 @@
+//////////////////////////// HOSTEL MANAGEMENT SYSTEM/////////////////////////////////////
+#include<iostream>
+#include<cstdio>
+#include<string.h>
+#include<conio.h>
+#include<stdlib.h>
+#include<fstream>
+#include<iomanip>
+using namespace std;
+
+//class resident start
+class resident
+{
+	private:
+	public:
+		resident()//constructor
+		{
+			
+		}
+		void getResidentData()//user input of data
+		{
+			
+		}	
+		void showResidentData()//print data on screen
+		{
+			
+		}
+		int registerResident()//register student in hostel records
+		{
+			if(==0 && ==0)
+			{
+				cout<<endl<<"Not a resident in this hostel."<<endl;
+				return 0;
+			}
+			else//storing data in hostel records
+			{
+				ofstream fout;
+				fout.open("",ios::app | ios::binary);
+				fout.write((char*)this, sizeof(*this));
+				fout.close();
+				return(1);
+			}
+		}
+		void viewAllResidents()//prints list of all residents on screen
+		{
+			ifstream fin;
+			fin.open("", ios::in | ios::binary);
+			if(!fin)
+			{
+				cout<<endl<<"File not found."<<endl;
+			}
+			else
+			{
+				fin.read((char*)this,sizeof(*this));
+				while(!fin.eof())
+				{
+					showResidentData();
+					fin.read((char*)this,sizeof(*this));	
+				}
+				fin.close();
+			}
+		}
+		void searchResident(char*)//searches and displays record of a particular resident
+		{
+			int counter=0;
+			ifstream fin;
+			fin.open("", ios::in | ios::binary);
+			if(!fin)
+			{
+				cout<<endl<<"File not found."<<endl;
+			}
+			else
+			{
+				fin.read((char*)this,sizeof(*this));
+				while(!fin.eof())
+				{
+					if(!strcmp(,))
+					{
+						showResidentData();
+						counter++;	
+					}
+					fin.read((char*)this,sizeof(*this));	
+				}
+				if(counter==0)
+				{
+					cout<<endl<<"Resident record not found."<<endl;
+				}
+				fin.close();
+			}
+		}
+		void removeResident(char*)//remove resident from hostel records
+		{
+			ifstream fin;
+			ofstream fout;
+			fin.open("", ios::in | ios::binary);
+			if(!fin)
+			{
+				cout<<endl<<"File not found."<<endl;
+			}
+			else
+			{
+				fout.open("tempfile",ios::out | ios::binary);
+				fin.read((char*)this,sizeof(*this));
+				while(!fin.eof())
+				{
+					if(strcmp(,))
+					{
+						fout.write((char*)this,sizeof(*this));	
+					}
+					fin.read((char*)this,sizeof(*this));	
+				}
+				fin.close();
+				fout.close();
+				remove("");//delete old file
+				rename("tempfile","");//rename new file
+			}
+		}
+		void updateResidentRecord(char*)
+		{
+			fstream file;
+			file.open("",ios::in | ios::out |ios::ate | ios::binary );
+			file.seekg(0);//bring ptr to start of file
+			file.read((char*)this,sizeof(*this));
+			while(!file.eof())
+			{
+				if(!strcmp(,))
+				{
+					getResidentData();
+					file.seekp(file.tellp()-sizeof(*this));//bring back one object
+					file.write((char*)this,sizeof(*this));
+				}
+				file.read((char*)this,sizeof(*this));	
+			}
+			file.close();
+		}
+		int menu()
+		{
+			int choice;
+			cout<<endl
+				<<"Hostel Management\n"
+				<<"1.Insert\n"
+				<<"2.View\n"
+				<<"3.Search\n"
+				<<"4.Delete\n"
+				<<"5,Update\n"
+				<<"6.Exit\n"
+				<<"\nEnter your choice:";
+			cin>>choice;
+			return (choice);				
+		}
+};
+//end of class
+
+int main()
+{
+	resident r;//object r of class resident
+	
+	while(1)
+	{
+		system("cls");//to clear screen
+		switch(menu())
+		{
+			case 1://insert
+				r.getResidentData();
+				r.registerResident();
+				cout<<"Resident registered.";
+				break;
+				
+			case 2://view
+				r.viewAllResidents();
+				break;
+				
+			case 3://search
+				cout<<"enter";
+				r.searchResident();
+				break;
+				
+			case 4://delete
+				cout<<"enter";
+				cin.ignore();
+				cin.getline();
+				r.removeResident();
+				break;
+				
+			case 5://update
+				cout<<"enter";
+				cin.ignore();
+				cin.getline();
+				r.updateResidentRecord();
+				break;
+				
+			case 6://exit
+				cout<<"Thanks\nPress any key to exit.";
+				getch();
+				exit(0);
+				
+			default:
+				cout<<"\nInvalid choice\n";
+		}
+		
+		cout<<"Press any key to continue\n";
+		getch();
+	}
+	
+	return 0;
+}
