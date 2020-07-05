@@ -1,4 +1,10 @@
 //////////////////////////// HOSTEL MANAGEMENT SYSTEM/////////////////////////////////////
+//room,roll,session ,showResidentData() 
+//string student::session="2019-2020";
+// int SIZE=2;//number of objects=no of students
+//void bill(void);//to pay the bills
+//		void attendance(void);//to mark attendance
+  
 #include<iostream>
 #include<cstdio>
 #include<string.h>
@@ -7,44 +13,72 @@
 #include<fstream>
 #include<iomanip>
 using namespace std;
+int menu(void);//non-class function
 
 //class resident start
 class resident
 {
 	private:
+		int age;
+		string mob_no;
+		string home_add;
+		int room_no;
+		string father_name;
+		string father_mob_no;
+		static string session;
+	
 	public:
+		string st_name;
+		int roll_no;
 		resident()//constructor
 		{
-			
+			st_name="noName";
+			home_add="invalid";
+			mob_no="0";	
+			room_no=0;
+			roll_no=0;
 		}
 		void getResidentData()//user input of data
 		{
-			
+			cin.ignore();
+			cout<<"Name:"<<endl;
+	    	getline(cin,st_name);
+			cout<<"Age:"<<endl;
+			cin>>age;
+			cout<<"Mobile number:"<<endl;
+			cin>>mob_no;
+			fflush(stdin);
+			cout<<"Home address:"<<endl;
+			getline(cin,home_add);
+			cout<<"Father name:"<<endl;
+		    getline(cin,father_name);
+		    cout<<" Father's mobile number:"<<endl;
+			cin>>father_mob_no;
 		}	
-		void showResidentData()//print data on screen
-		{
-			
-		}
 		int registerResident()//register student in hostel records
 		{
-			if(==0 && ==0)
+			if(st_name=="noName" && roll_no==0)
 			{
-				cout<<endl<<"Not a resident in this hostel."<<endl;
+				cout<<endl<<"Invalid registration."<<endl;
 				return 0;
 			}
 			else//storing data in hostel records
 			{
 				ofstream fout;
-				fout.open("",ios::app | ios::binary);
+				fout.open("hostelRec.txt",ios::app | ios::binary);
 				fout.write((char*)this, sizeof(*this));
 				fout.close();
 				return(1);
 			}
 		}
+		void showResidentData()//print data on screen
+		{
+			cout<<"Name:"<<st_name<<" roll no="<<roll_no<<endl<<"Home town:"<<home_add<<endl;
+		}
 		void viewAllResidents()//prints list of all residents on screen
 		{
 			ifstream fin;
-			fin.open("", ios::in | ios::binary);
+			fin.open("hostelRec.txt", ios::in | ios::binary);
 			if(!fin)
 			{
 				cout<<endl<<"File not found."<<endl;
@@ -52,19 +86,20 @@ class resident
 			else
 			{
 				fin.read((char*)this,sizeof(*this));
+				cout<<endl;
 				while(!fin.eof())
 				{
-					showResidentData();
+					cout<<st_name<<endl;
 					fin.read((char*)this,sizeof(*this));	
 				}
 				fin.close();
 			}
 		}
-		void searchResident(char*)//searches and displays record of a particular resident
+		void searchResident(string name)//searches and displays record of a particular resident
 		{
 			int counter=0;
 			ifstream fin;
-			fin.open("", ios::in | ios::binary);
+			fin.open("hostelRec.txt", ios::in | ios::binary);
 			if(!fin)
 			{
 				cout<<endl<<"File not found."<<endl;
@@ -74,7 +109,7 @@ class resident
 				fin.read((char*)this,sizeof(*this));
 				while(!fin.eof())
 				{
-					if(!strcmp(,))
+					if(st_name==name)
 					{
 						showResidentData();
 						counter++;	
@@ -83,27 +118,27 @@ class resident
 				}
 				if(counter==0)
 				{
-					cout<<endl<<"Resident record not found."<<endl;
+					cout<<endl<<name<<" is not a resident in this hostel."<<endl;
 				}
 				fin.close();
 			}
 		}
-		void removeResident(char*)//remove resident from hostel records
+		void removeResident(int rollNo)//remove resident from hostel records
 		{
 			ifstream fin;
 			ofstream fout;
-			fin.open("", ios::in | ios::binary);
+			fin.open("hostelRec.txt", ios::in | ios::binary);
 			if(!fin)
 			{
 				cout<<endl<<"File not found."<<endl;
 			}
 			else
 			{
-				fout.open("tempfile",ios::out | ios::binary);
+				fout.open("tempfile.txt",ios::out | ios::binary);
 				fin.read((char*)this,sizeof(*this));
 				while(!fin.eof())
 				{
-					if(strcmp(,))
+					if(roll_no!=rollNo)
 					{
 						fout.write((char*)this,sizeof(*this));	
 					}
@@ -111,19 +146,19 @@ class resident
 				}
 				fin.close();
 				fout.close();
-				remove("");//delete old file
-				rename("tempfile","");//rename new file
+				remove("hostelRec.txt");//delete old file
+				rename("tempfile.txt","hostelRec.txt");//rename new file
 			}
 		}
-		void updateResidentRecord(char*)
+		void updateResidentRecord(string name, int roll)//update resident record
 		{
 			fstream file;
-			file.open("",ios::in | ios::out |ios::ate | ios::binary );
+			file.open("hostelRec.txt",ios::in | ios::out |ios::ate | ios::binary );
 			file.seekg(0);//bring ptr to start of file
 			file.read((char*)this,sizeof(*this));
 			while(!file.eof())
 			{
-				if(!strcmp(,))
+				if(st_name==name && roll_no==roll)
 				{
 					getResidentData();
 					file.seekp(file.tellp()-sizeof(*this));//bring back one object
@@ -133,23 +168,30 @@ class resident
 			}
 			file.close();
 		}
-		int menu()
-		{
-			int choice;
-			cout<<endl
-				<<"Hostel Management\n"
-				<<"1.Insert\n"
-				<<"2.View\n"
-				<<"3.Search\n"
-				<<"4.Delete\n"
-				<<"5,Update\n"
-				<<"6.Exit\n"
-				<<"\nEnter your choice:";
-			cin>>choice;
-			return (choice);				
-		}
+		void bill(void);//to pay the bills
+		void attendance(void);//to mark attendance
 };
 //end of class
+
+int menu()
+{
+	int choice;
+	cout<<endl
+		<<"Hostel Management\n"
+		<<"1.Insert new\n"
+		<<"2.View all\n"
+		<<"3.Search a resident\n"
+		<<"4.Delete existing resident\n"
+		<<"5.Update resident record\n"
+		<<"6.Exit system\n"
+		<<"\nEnter your choice:";
+	cin>>choice;
+	return (choice);				
+}
+
+//string student::session="2019-2020";
+ int SIZE=2;//number of objects=no of students
+
 
 int main()
 {
@@ -160,42 +202,65 @@ int main()
 		system("cls");//to clear screen
 		switch(menu())
 		{
-			case 1://insert
+			case 1://insert new resident
+			{
 				r.getResidentData();
 				r.registerResident();
-				cout<<"Resident registered.";
+				cout<<"Resident registered."<<endl;
 				break;
+			}			
 				
-			case 2://view
+			case 2://view all residents list
+			{
 				r.viewAllResidents();
 				break;
-				
-			case 3://search
-				cout<<"enter";
-				r.searchResident();
-				break;
-				
-			case 4://delete
-				cout<<"enter";
+			}
+								
+			case 3://search a particular resident by name
+			{
+				cout<<"Enter name of resident to be searched:";
+				string name;
 				cin.ignore();
-				cin.getline();
-				r.removeResident();
+				getline(cin,name);
+				r.searchResident(name);
 				break;
-				
-			case 5://update
-				cout<<"enter";
+			}
+							
+			case 4://delete a resident by roll no user input
+			{
+				cout<<"Enter roll no of the resident to be removed:";
+				int rollNo;
+				cin>>rollNo;
+				r.removeResident(rollNo);
+				break;
+			}
+							
+			case 5://update record using name and roll no input
+			{
+				cout<<"Enter name and roll no of the resident to be updated:";
+				cout<<"name:";
+				string name;
 				cin.ignore();
-				cin.getline();
-				r.updateResidentRecord();
+				getline(cin,name);
+				cout<<"\nroll no:";
+				int roll;
+				cin>>roll;
+				r.updateResidentRecord(name,roll);
 				break;
-				
-			case 6://exit
+			}
+								
+			case 6://exit system
+			{
 				cout<<"Thanks\nPress any key to exit.";
 				getch();
 				exit(0);
-				
+			}
+						
 			default:
+			{
 				cout<<"\nInvalid choice\n";
+			}
+				
 		}
 		
 		cout<<"Press any key to continue\n";
